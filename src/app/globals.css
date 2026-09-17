@@ -1,26 +1,500 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Brand Teal */
+    --primary-teal: 181 100% 32.5%;
+    --primary-teal-hover: 181 100% 28%;
+    --primary-teal-light: 174 85% 95%;
+
+    /* Brand Orange */
+    --primary-orange: 24 100% 50%;
+    --primary-orange-hover: 24 100% 45%;
+    --primary-orange-light: 24 100% 96%;
+
+    --primary: 24 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 24 100% 50%;
+
+    --radius: 0.75rem;
   }
 }
 
+/* Custom Text Gradients matching Screenshots */
+.text-gradient-teal {
+  background: linear-gradient(180deg, #00BCC5 0%, #009295 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-orange {
+  background: linear-gradient(180deg, #FF6F00 0%, #E85000 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Utilities for FunRaisingIt styling */
+.brand-teal {
+  color: #00A3A6;
+}
+
+.brand-orange {
+  color: #FF6200;
+}
+
+.bg-brand-teal {
+  background-color: #00A3A6;
+}
+
+.bg-brand-orange {
+  background-color: #FF6200;
+}
+
+/* Ambient luminous mesh background */
+.bg-ambient-mesh {
+  background-color: #FCFDFF;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle card elevation shadow */
+.shadow-brand-card {
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), 0 2px 10px -2px rgba(0, 0, 0, 0.02);
+}
+
+.shadow-brand-pill {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-orange-glow {
+  box-shadow: 0 6px 20px -2px rgba(255, 98, 0, 0.4);
+}
+
+/* Smooth transitions */
+* {
+  border-color: hsl(var(--border));
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FCFDFF;
+  color: #0F172A;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Base cursor rules for all interactive elements */
+button,
+[role="button"],
+a,
+summary,
+select,
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+textarea {
+  cursor: text;
+}
+
+
+/* =========================================================
+   Brand Animation System & Keyframes
+   ========================================================= */
+
+@keyframes screenEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes hornWiggle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  15% {
+    transform: rotate(-10deg) scale(1.1);
+  }
+  30% {
+    transform: rotate(8deg) scale(1.1);
+  }
+  45% {
+    transform: rotate(-5deg) scale(1.05);
+  }
+  60% {
+    transform: rotate(3deg) scale(1.02);
+  }
+  75% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes pulseGlowOrange {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 98, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 98, 0, 0);
+  }
+}
+
+@keyframes pulseGlowTeal {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 163, 166, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(0, 163, 166, 0);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatGentleAlt {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+/* Master Screen Transition */
+.animate-screen-enter {
+  animation: screenEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+/* Micro Elements Animations */
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-pop-in {
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+
+.animate-horn {
+  animation: hornWiggle 2.2s ease-in-out infinite;
+  transform-origin: 30% 70%;
+}
+
+.animate-pulse-glow-orange {
+  animation: pulseGlowOrange 2.5s infinite;
+}
+
+.animate-pulse-glow-teal {
+  animation: pulseGlowTeal 2.5s infinite;
+}
+
+.animate-float {
+  animation: floatGentle 6s ease-in-out infinite;
+}
+
+.animate-float-alt {
+  animation: floatGentleAlt 7s ease-in-out infinite;
+}
+
+/* Stagger Delays */
+.delay-50 { animation-delay: 50ms; }
+.delay-75 { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-250 { animation-delay: 250ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-350 { animation-delay: 350ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-550 { animation-delay: 550ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* =========================================================
+   Eye-Catching Glows, Shimmer & Interactive Effects
+   ========================================================= */
+
+/* Shimmer Highlight Effect */
+.shimmer-badge {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 98, 0, 0.06) 0%,
+    rgba(255, 98, 0, 0.24) 50%,
+    rgba(255, 98, 0, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerSweep 2.5s infinite linear;
+}
+
+/* Directional Screen Slide Transitions */
+@keyframes stepSlideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(36px) scale(0.97);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes stepSlideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-36px) scale(0.97);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-step-enter-forward {
+  animation: stepSlideInRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.animate-step-enter-backward {
+  animation: stepSlideInLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+/* Animated Gradient Text */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.text-gradient-animated-orange {
+  background: linear-gradient(90deg, #FF6200 0%, #FFA200 35%, #EA580C 70%, #FF6200 100%);
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlow 5s ease infinite;
+}
+
+.text-gradient-animated-teal {
+  background: linear-gradient(90deg, #00A3A6 0%, #38BDF8 40%, #008083 75%, #00A3A6 100%);
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlow 6s ease infinite;
+}
+
+/* Eye-Catchy 100% Free Glow & Pulse */
+@keyframes freePulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 2px 10px rgba(255, 98, 0, 0.35));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 3px 20px rgba(255, 98, 0, 0.65));
+    transform: scale(1.025);
+  }
+}
+
+.animate-free-badge {
+  animation: freePulseGlow 2.4s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Button Light Beam Sweep (CTA Shine Effect) */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 15%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 85%
+  );
+  transform: rotate(25deg);
+  animation: btnShineSweep 3.2s infinite;
+  pointer-events: none;
+}
+
+@keyframes btnShineSweep {
+  0% {
+    left: -70%;
+  }
+  30% {
+    left: 140%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
+/* Luminous Gradient Border on Cards */
+.luminous-card {
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luminous-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 163, 166, 0.5) 0%,
+    rgba(255, 98, 0, 0.45) 50%,
+    rgba(0, 163, 166, 0.2) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.7;
+  transition: opacity 0.35s ease, filter 0.35s ease;
+  pointer-events: none;
+}
+
+.luminous-card:hover::before {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(255, 98, 0, 0.25));
+}
+
+/* Perk Card Glows */
+.hover-glow-teal:hover {
+  box-shadow: 0 14px 30px -8px rgba(0, 163, 166, 0.2), 0 4px 12px -2px rgba(0, 163, 166, 0.1);
+  border-color: rgba(0, 163, 166, 0.6) !important;
+}
+
+.hover-glow-orange:hover {
+  box-shadow: 0 14px 30px -8px rgba(255, 98, 0, 0.2), 0 4px 12px -2px rgba(255, 98, 0, 0.1);
+  border-color: rgba(255, 98, 0, 0.6) !important;
 }
