@@ -24,14 +24,16 @@ export type EmailFormData = z.infer<typeof emailFormSchema>;
 
 export interface StepComingSoonProps {
   initialEmail?: string;
-  onSubmitEmail: (email: string) => void;
+  onSubmitEmail: (email: string) => Promise<void> | void;
   onSuggestNextStep?: () => void;
+  isLoading?: boolean;
 }
 
 export function StepComingSoon({
   initialEmail = "",
   onSubmitEmail,
   onSuggestNextStep,
+  isLoading = false,
 }: StepComingSoonProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -42,16 +44,37 @@ export function StepComingSoon({
     },
   });
 
+  const submitting = isSubmitting || isLoading;
+
   const handleSubmit = async (data: EmailFormData) => {
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 350));
-      toast.success("Email confirmed! 🎉", {
-        description: `Your early access spot is reserved for ${data.email}. Next step: Claim your VIP privileges!`,
+      await onSubmitEmail(data.email);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to join waitlist. Please check your connection and try again.";
+      form.setError("email", { type: "manual", message });
+      toast.error("Waitlist Registration", {
+        description: message,
       });
-      onSubmitEmail(data.email);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSuggestClick = () => {
+    const currentEmail = form.getValues("email");
+    if (currentEmail && currentEmail.trim().length > 0) {
+      form.handleSubmit(handleSubmit)();
+    } else {
+      const inputEl = document.getElementById("email-input");
+      inputEl?.focus();
+      toast.info("Check Registration", {
+        description:
+          "Please enter your email above to check your waitlist status or claim VIP perks.",
+      });
     }
   };
 
@@ -124,7 +147,7 @@ export function StepComingSoon({
                       type="submit"
                       variant="orange"
                       size="pill"
-                      isLoading={isSubmitting}
+                      isLoading={submitting}
                       className="h-11 px-5 sm:px-6 shrink-0 text-sm font-bold shadow-md hover:shadow-orange-glow hover:scale-[1.02] active:scale-[0.98] btn-shine transition-all"
                     >
                       Notify Me
@@ -155,7 +178,7 @@ export function StepComingSoon({
           <div className="mt-8 pt-4 border-t border-slate-200/50 flex flex-col items-center justify-center gap-1.5 animate-fade-in-up delay-300">
             <button
               type="button"
-              onClick={onSuggestNextStep}
+              onClick={handleSuggestClick}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 hover:bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#FF6200] border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all group cursor-pointer"
             >
               <Sparkles className="h-3.5 w-3.5 text-[#FF6200] group-hover:rotate-12 transition-transform" />

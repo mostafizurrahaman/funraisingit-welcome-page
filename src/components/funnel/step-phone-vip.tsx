@@ -39,7 +39,25 @@ const phoneFormSchema = z.object({
       },
       {
         message:
-          "Please enter a valid 10-digit phone number (e.g. 555-000-0000).",
+          "Please enter a valid 10-digit US phone number (e.g. (202) 555-0143).",
+      },
+    )
+    .refine(
+      (val) => {
+        const digitsOnly = val.replace(/\D/g, "");
+        if (digitsOnly.length !== 10) return true;
+        const areaFirst = digitsOnly[0];
+        const exchangeFirst = digitsOnly[3];
+        return (
+          areaFirst >= "2" &&
+          areaFirst <= "9" &&
+          exchangeFirst >= "2" &&
+          exchangeFirst <= "9"
+        );
+      },
+      {
+        message:
+          "Please enter a valid US phone number with area code (e.g. (202) 555-0143).",
       },
     ),
 });
@@ -49,8 +67,11 @@ export type PhoneFormData = z.infer<typeof phoneFormSchema>;
 export interface StepPhoneVipProps {
   userEmail?: string;
   initialPhone?: string;
-  onSubmitPhone: (phone: string) => void;
-  onSkipPhone: () => void;
+  memberNumber?: string;
+  isReturningMember?: boolean;
+  onSubmitPhone: (phone: string) => Promise<void> | void;
+  onSkipPhone: () => Promise<void> | void;
+  isSkipping?: boolean;
 }
 
 // Utility to format raw digits as (XXX) XXX-XXXX
@@ -65,10 +86,14 @@ function formatPhoneNumber(value: string) {
 export function StepPhoneVip({
   userEmail = "user@example.com",
   initialPhone = "",
+  memberNumber = "",
+  isReturningMember = false,
   onSubmitPhone,
   onSkipPhone,
+  isSkipping = false,
 }: StepPhoneVipProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSkippingLocal, setIsSkippingLocal] = React.useState(false);
 
   const form = useForm<PhoneFormData>({
     resolver: zodResolver(phoneFormSchema),
@@ -77,16 +102,41 @@ export function StepPhoneVip({
     },
   });
 
+  const skipping = isSkipping || isSkippingLocal;
+
   const handleSubmit = async (data: PhoneFormData) => {
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400));
-      toast.success("VIP Access Granted! 🚀", {
-        description: `Confirmation SMS dispatched to +1 ${data.phone}`,
+      await onSubmitPhone(data.phone);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to claim VIP access. Please check your phone number and try again.";
+      form.setError("phone", { type: "manual", message });
+      toast.error("VIP Upgrade Notice", {
+        description: message,
       });
-      onSubmitPhone(data.phone);
+      document.getElementById("phone-input")?.focus();
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSkip = async () => {
+    setIsSkippingLocal(true);
+    try {
+      await onSkipPhone();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to confirm standard waitlist access.";
+      toast.error("Waitlist Update", {
+        description: message,
+      });
+    } finally {
+      setIsSkippingLocal(false);
     }
   };
 
@@ -125,8 +175,13 @@ export function StepPhoneVip({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <Badge variant="teal" size="sm" className="font-semibold text-xs">
-              Verified Submission
+              {isReturningMember ? "Returning Member" : "Verified Submission"}
             </Badge>
+            {memberNumber && (
+              <Badge variant="orange" size="sm" className="font-semibold text-xs">
+                Member {memberNumber}
+              </Badge>
+            )}
             {userEmail && (
               <span className="text-xs text-slate-400 font-medium">
                 ({userEmail})
@@ -134,7 +189,9 @@ export function StepPhoneVip({
             )}
           </div>
           <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Email Confirmed! You&apos;re on the early access list.
+            {isReturningMember
+              ? "Welcome back! Claim your 100% Free VIP Upgrade below."
+              : "Email Confirmed! You're on the early access list."}
           </h2>
         </div>
       </div>
@@ -265,7 +322,7 @@ export function StepPhoneVip({
                       id="phone-input"
                       type="tel"
                       variant="ghost"
-                      placeholder="(555) 000-0000"
+                      placeholder="(202) 555-0143"
                       aria-label="Phone number"
                       aria-invalid={fieldState.invalid}
                       autoComplete="tel"
@@ -281,6 +338,7 @@ export function StepPhoneVip({
                       variant="orange"
                       size="pill"
                       isLoading={isSubmitting}
+                      disabled={isSubmitting || skipping}
                       className="h-11 px-5 sm:px-6 shrink-0 text-sm font-bold shadow-md hover:shadow-orange-glow hover:scale-[1.02] active:scale-[0.98] btn-shine transition-all"
                     >
                       Claim VIP Access
@@ -308,10 +366,11 @@ export function StepPhoneVip({
           </p>
           <button
             type="button"
-            onClick={onSkipPhone}
-            className="text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1 hover:underline transition-colors shrink-0 cursor-pointer group"
+            onClick={handleSkip}
+            disabled={isSubmitting || skipping}
+            className="text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1 hover:underline transition-colors shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group"
           >
-            No thanks, keep standard access
+            {skipping ? "Confirming standard access..." : "No thanks, keep standard access"}
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>

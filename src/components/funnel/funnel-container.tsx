@@ -7,14 +7,28 @@ import { StepComingSoon } from "./step-coming-soon";
 import { StepPhoneVip } from "./step-phone-vip";
 import { StepCongratulations } from "./step-congratulations";
 import { ArrowLeft } from "lucide-react";
+import {
+  submitWaitlistEmail,
+  claimWaitlistVip,
+  skipWaitlistVip,
+  type WaitlistEntry,
+} from "@/lib/waitlist-api";
+import { toast } from "sonner";
 
 export function FunnelContainer() {
   const [currentStep, setCurrentStep] = React.useState<1 | 2 | 3>(1);
   const [displayedStep, setDisplayedStep] = React.useState<1 | 2 | 3>(1);
-  const [transitionPhase, setTransitionPhase] = React.useState<"idle" | "exiting" | "entering">("idle");
+  const [transitionPhase, setTransitionPhase] = React.useState<
+    "idle" | "exiting" | "entering"
+  >("idle");
   const [direction, setDirection] = React.useState<"forward" | "backward">("forward");
   const [email, setEmail] = React.useState<string>("");
   const [phone, setPhone] = React.useState<string>("");
+  const [memberNumber, setMemberNumber] = React.useState<string>("");
+  const [isVip, setIsVip] = React.useState<boolean>(false);
+  const [isReturningMember, setIsReturningMember] = React.useState<boolean>(false);
+  const [waitlistEntry, setWaitlistEntry] = React.useState<WaitlistEntry | null>(null);
+  const [isSkipping, setIsSkipping] = React.useState<boolean>(false);
 
   // Smooth Step Navigation Orchestrator
   const navigateToStep = (targetStep: 1 | 2 | 3) => {
@@ -35,24 +49,113 @@ export function FunnelContainer() {
     }, 200);
   };
 
-  // Handlers
-  const handleEmailSubmit = (submittedEmail: string) => {
-    setEmail(submittedEmail);
+  // Step 1: Submit Email to Backend
+  const handleEmailSubmit = async (submittedEmail: string) => {
+    const result = await submitWaitlistEmail(submittedEmail);
+    setEmail(result.waitlist.email);
+    setWaitlistEntry(result.waitlist);
+    setMemberNumber(result.waitlist.formattedMemberNumber);
+    setIsVip(result.waitlist.isVip);
+    setIsReturningMember(!result.isNew);
+
+    if (result.waitlist.phoneNumber) {
+      setPhone(result.waitlist.phoneNumber);
+    }
+
+    if (result.waitlist.isVip) {
+      toast.info("Welcome Back VIP! 🎉", {
+        description:
+          result.message ||
+          `You're already registered as VIP Member ${result.waitlist.formattedMemberNumber}! Showing your VIP Founding Pass.`,
+      });
+      navigateToStep(3);
+    } else {
+      if (!result.isNew) {
+        toast.info("Welcome Back! 🎉", {
+          description:
+            result.message ||
+            `You are already on the waitlist as Member ${result.waitlist.formattedMemberNumber}. Claim your VIP upgrade below!`,
+        });
+      } else {
+        toast.success("Email Confirmed! 🎉", {
+          description:
+            result.message ||
+            `Your spot is reserved as Member ${result.waitlist.formattedMemberNumber}. Next step: Claim your 100% Free VIP privileges!`,
+        });
+      }
+      navigateToStep(2);
+    }
+  };
+
+  // Step 2: Claim VIP with Phone Number
+  const handlePhoneSubmit = async (submittedPhone: string) => {
+    if (!email) {
+      toast.error("Please enter your email first.");
+      navigateToStep(1);
+      return;
+    }
+
+    const result = await claimWaitlistVip(email, submittedPhone);
+    setPhone(result.waitlist.phoneNumber || submittedPhone);
+    setIsVip(true);
+    setWaitlistEntry(result.waitlist);
+    if (result.waitlist.formattedMemberNumber) {
+      setMemberNumber(result.waitlist.formattedMemberNumber);
+    }
+
+    toast.success("VIP Access Granted! 🚀", {
+      description:
+        result.message ||
+        `Congratulations! You've claimed VIP Early Access as Member ${result.waitlist.formattedMemberNumber}.`,
+    });
+    navigateToStep(3);
+  };
+
+  // Step 2: Skip VIP to Standard Access
+  const handleSkipPhone = async () => {
+    if (!email) {
+      navigateToStep(3);
+      return;
+    }
+
+    setIsSkipping(true);
+    try {
+      const result = await skipWaitlistVip(email);
+      setIsVip(false);
+      setWaitlistEntry(result.waitlist);
+      if (result.waitlist.formattedMemberNumber) {
+        setMemberNumber(result.waitlist.formattedMemberNumber);
+      }
+      toast.info("Standard Access Confirmed", {
+        description:
+          result.message ||
+          `You're on the waitlist as Member ${result.waitlist.formattedMemberNumber}.`,
+      });
+      navigateToStep(3);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to record preference.";
+      toast.error("Waitlist Update", { description: message });
+      // Still proceed to step 3 so user is not blocked
+      navigateToStep(3);
+    } finally {
+      setIsSkipping(false);
+    }
+  };
+
+  // Step 3 -> Upgrade back to VIP
+  const handleUpgradeToVip = () => {
     navigateToStep(2);
   };
 
-  const handlePhoneSubmit = (submittedPhone: string) => {
-    setPhone(submittedPhone);
-    navigateToStep(3);
-  };
-
-  const handleSkipPhone = () => {
-    navigateToStep(3);
-  };
-
+  // Reset entire flow
   const handleReset = () => {
     setEmail("");
     setPhone("");
+    setMemberNumber("");
+    setIsVip(false);
+    setIsReturningMember(false);
+    setWaitlistEntry(null);
     navigateToStep(1);
   };
 
@@ -73,7 +176,7 @@ export function FunnelContainer() {
 
   return (
     <div className="min-h-screen flex flex-col bg-ambient-mesh relative overflow-hidden selection:bg-[#FF6200]/20 selection:text-[#FF6200]">
-      {/* Ambient Luminous Background Gradient Orbs matching the design screenshots */}
+      {/* Ambient Luminous Background Gradient Orbs */}
       <div
         className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
         aria-hidden="true"
@@ -89,7 +192,7 @@ export function FunnelContainer() {
       {/* Dynamic Header */}
       <div className="relative z-10">
         <Header
-          isVipUnlocked={displayedStep === 3}
+          isVipUnlocked={displayedStep === 3 && isVip}
           onLogoClick={() => navigateToStep(1)}
         />
       </div>
@@ -171,14 +274,12 @@ export function FunnelContainer() {
           {/* Step 3 */}
           <button
             type="button"
-            onClick={() => phone && navigateToStep(3)}
-            disabled={displayedStep === 3 || !phone}
+            onClick={() => displayedStep === 3}
+            disabled={displayedStep !== 3}
             aria-label="Go to VIP Access step"
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all duration-300 select-none ${
               displayedStep === 3
                 ? "bg-[#00A3A6]/10 text-[#00A3A6] shadow-xs cursor-default"
-                : phone
-                ? "text-slate-700 hover:text-[#00A3A6] hover:bg-[#00A3A6]/10 cursor-pointer"
                 : "text-slate-400 cursor-not-allowed opacity-50"
             }`}
           >
@@ -189,7 +290,7 @@ export function FunnelContainer() {
                   : "bg-slate-300"
               }`}
             />
-            <span>VIP Access</span>
+            <span>{isVip ? "VIP Access" : "Waitlist Access"}</span>
           </button>
         </div>
       </nav>
@@ -201,7 +302,11 @@ export function FunnelContainer() {
             <StepComingSoon
               initialEmail={email}
               onSubmitEmail={handleEmailSubmit}
-              onSuggestNextStep={() => navigateToStep(2)}
+              onSuggestNextStep={() => {
+                if (email) {
+                  navigateToStep(2);
+                }
+              }}
             />
           )}
 
@@ -219,19 +324,27 @@ export function FunnelContainer() {
                 </button>
               </div>
               <StepPhoneVip
-                userEmail={email || "alex@creatorlaunch.com"}
+                userEmail={email || "your-email@example.com"}
                 initialPhone={phone}
+                memberNumber={memberNumber || waitlistEntry?.formattedMemberNumber}
+                isReturningMember={isReturningMember}
                 onSubmitPhone={handlePhoneSubmit}
                 onSkipPhone={handleSkipPhone}
+                isSkipping={isSkipping}
               />
             </div>
           )}
 
           {displayedStep === 3 && (
             <StepCongratulations
-              userEmail={email || "alex@creatorlaunch.com"}
-              userPhone={phone || "(555) 019-2834"}
+              userEmail={email || "user@funraisingit.com"}
+              userPhone={phone}
+              memberNumber={
+                memberNumber || waitlistEntry?.formattedMemberNumber || "#1"
+              }
+              isVip={isVip}
               onReset={handleReset}
+              onUpgradeToVip={handleUpgradeToVip}
             />
           )}
         </div>
