@@ -314,11 +314,11 @@ export function StepCongratulations({
         {isVip ? (
           <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#F0FDFB] border border-[#99F6E4]/70 text-slate-700 animate-fade-in-up delay-450 hover-glow-teal transition-all">
             <div className="h-8 w-8 rounded-full bg-[#CCFBF1] text-[#00A3A6] flex items-center justify-center shrink-0">
-              <MessageSquare className="h-4 w-4 stroke-[2.5]" />
+              <Mail className="h-4 w-4 stroke-[2.5]" />
             </div>
             <p className="text-xs sm:text-sm text-slate-700 leading-snug">
-              A welcome SMS with your private access link and VIP credentials has
-              been sent to your mobile phone{userPhone ? ` (${userPhone})` : ""}.
+              A VIP confirmation email has been sent to{" "}
+              <span className="font-bold text-slate-900">{userEmail}</span>. A welcome SMS has also been sent to your mobile phone{userPhone ? ` (${userPhone})` : ""}.
             </p>
           </div>
         ) : (
@@ -327,8 +327,8 @@ export function StepCongratulations({
               <Mail className="h-4 w-4 stroke-[2.5]" />
             </div>
             <p className="text-xs sm:text-sm text-slate-700 leading-snug">
-              Confirmation is registered for{" "}
-              <span className="font-bold text-slate-900">{userEmail}</span>. Keep an eye on your inbox for our launch announcement!
+              A confirmation email has been sent to{" "}
+              <span className="font-bold text-slate-900">{userEmail}</span>. Keep an eye on your inbox for our official launch updates!
             </p>
           </div>
         )}

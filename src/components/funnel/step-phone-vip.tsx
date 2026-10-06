@@ -9,7 +9,9 @@ import {
   ArrowRight,
   Award,
   Check,
+  Lock,
   Phone,
+  PhoneCall,
   Smartphone,
   Sparkles,
   Users,
@@ -20,13 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-} from "@/components/ui/input-group";
 import { Typography } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
 const phoneFormSchema = z.object({
   phone: z
@@ -112,9 +109,9 @@ export function StepPhoneVip({
       const message =
         err instanceof Error
           ? err.message
-          : "Failed to claim VIP access. Please check your phone number and try again.";
+          : "Failed to claim VIP priority access. Please check your phone number and try again.";
       form.setError("phone", { type: "manual", message });
-      toast.error("VIP Upgrade Notice", {
+      toast.error("Priority List Notice", {
         description: message,
       });
       document.getElementById("phone-input")?.focus();
@@ -144,24 +141,23 @@ export function StepPhoneVip({
     <div className="w-full flex flex-col items-center max-w-3xl mx-auto px-4 py-6 sm:py-10">
       {/* Spark Eyebrow */}
       <Typography.SparkEyebrow className="mb-3 sm:mb-4 animate-fade-in-down delay-50">
-        YOU&apos;RE ON THE VIP WAITLIST!
+        STEP 2 OF 2 • VIP PRIORITY LIST
       </Typography.SparkEyebrow>
 
       {/* Hero Headline */}
-      <Typography.Hero className="mb-3 sm:mb-4 animate-scale-in delay-100">
+      <Typography.Hero className="mb-3 sm:mb-4 animate-scale-in delay-100 text-center">
         <span className="text-gradient-animated-teal block tracking-[-0.03em] drop-shadow-xs">
-          Email Submission
+          You&apos;re On The Waitlist!
         </span>
-        <span className="text-gradient-animated-orange block tracking-[-0.03em] mt-[-6px] sm:mt-[-10px] drop-shadow-xs">
-          Success
+        <span className="text-gradient-animated-orange block tracking-[-0.03em] mt-[-4px] sm:mt-[-8px] drop-shadow-xs">
+          Join The VIP Priority List
         </span>
       </Typography.Hero>
 
       {/* Subtitle / Lead */}
-      <Typography.Lead className="mb-6 sm:mb-8 max-w-xl text-slate-600 animate-fade-in-up delay-150">
-        Welcome to FunRaising
-        <span className="text-[#00A3A6] font-semibold">It</span>. Your spot has
-        been secured. Want to become a VIP member for 💯 Free instead?
+      <Typography.Lead className="mb-6 sm:mb-8 max-w-xl text-center text-slate-600 animate-fade-in-up delay-150">
+        Your spot is reserved on FunRaising
+        <span className="text-[#00A3A6] font-semibold">It</span>. Enter your phone number below to join our VIP Priority List and move to the front of the line for 💯 Free!
       </Typography.Lead>
 
       {/* Top Confirmation Card */}
@@ -175,7 +171,7 @@ export function StepPhoneVip({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <Badge variant="teal" size="sm" className="font-semibold text-xs">
-              {isReturningMember ? "Returning Member" : "Verified Submission"}
+              {isReturningMember ? "Returning Member" : "Email Confirmed"}
             </Badge>
             {memberNumber && (
               <Badge variant="orange" size="sm" className="font-semibold text-xs">
@@ -183,15 +179,15 @@ export function StepPhoneVip({
               </Badge>
             )}
             {userEmail && (
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs text-slate-500 font-medium truncate">
                 ({userEmail})
               </span>
             )}
           </div>
           <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
             {isReturningMember
-              ? "Welcome back! Claim your 100% Free VIP Upgrade below."
-              : "Email Confirmed! You're on the early access list."}
+              ? "Welcome back! Enter your phone number below to claim your Free VIP upgrade."
+              : "Waitlist Spot Reserved! Enter your phone number below to join the Priority List."}
           </h2>
         </div>
       </div>
@@ -213,16 +209,14 @@ export function StepPhoneVip({
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-              Want to become a VIP Member?
+              Why Join The VIP Priority List?
             </h2>
             <Badge variant="orange" size="default" className="w-fit animate-pulse-glow-orange">
-              Limited Spots Available
+              Limited VIP Spots
             </Badge>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-            Fast-track your access, unlock priority early access when we go
-            live, and get our top-tier campaign acceleration package before
-            public launch.
+            Priority members bypass standard wait queues, receive early platform invitations before public launch, and get our top-tier campaign acceleration perks.
           </p>
         </div>
 
@@ -237,7 +231,7 @@ export function StepPhoneVip({
               <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#00A3A6] transition-colors">
                 Priority Early Access
               </h4>
-              <p className="text-xs text-slate-600 mt-0.5">When we go live</p>
+              <p className="text-xs text-slate-600 mt-0.5">First in line when we launch</p>
             </div>
           </div>
 
@@ -266,8 +260,7 @@ export function StepPhoneVip({
                 Special Invitation
               </h4>
               <p className="text-xs text-slate-600 mt-0.5">
-                Special invitation to our first annual Funraisingit meet and
-                greet networking event.
+                Exclusive invitation to our annual meet & greet event
               </p>
             </div>
           </div>
@@ -282,13 +275,26 @@ export function StepPhoneVip({
                 Priority Beta Access
               </h4>
               <p className="text-xs text-slate-600 mt-0.5">
-                Day 1 build on iOS & Android
+                Day 1 builds on iOS & Android
               </p>
             </div>
           </div>
         </div>
 
-        {/* Phone Input Form */}
+        {/* PROMINENT CALL TO ACTION: Enter Phone Number Below */}
+        <div className="w-full rounded-2xl bg-gradient-to-r from-[#FFF7ED] via-[#FFF3E8] to-[#FFF7ED] border-2 border-[#FFD8B2] p-4 sm:p-5 mb-5 text-center shadow-xs animate-fade-in-up delay-450">
+          <div className="inline-flex items-center justify-center gap-2 text-[#EA580C] font-extrabold text-base sm:text-lg mb-1">
+            <div className="h-7 w-7 rounded-full bg-[#FF6200] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <PhoneCall className="h-4 w-4" />
+            </div>
+            Enter Your Phone Number Below
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 max-w-lg mx-auto font-medium leading-relaxed">
+            Enter your mobile number below to join the <span className="text-slate-900 font-bold">VIP Priority List</span>. We&apos;ll text you instant confirmation and notify you the moment early access opens.
+          </p>
+        </div>
+
+        {/* Clean, Non-Jumbled Phone Form */}
         <form
           id="phone-step-form"
           onSubmit={form.handleSubmit(handleSubmit)}
@@ -301,55 +307,59 @@ export function StepPhoneVip({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <InputGroup
-                    variant="pill"
-                    data-invalid={fieldState.invalid}
-                    className="h-14 pl-3 sm:pl-4 pr-1.5 bg-white border border-slate-200/90 shadow-brand-pill hover:border-slate-300 focus-within:border-[#FF6200] focus-within:ring-4 focus-within:ring-[#FF6200]/15 transition-all duration-300"
-                  >
-                    <InputGroupAddon
-                      align="inline-start"
-                      className="pl-1 sm:pl-2 pr-2 gap-2 text-slate-600 w-50"
+                  {/* Clean Form Row: Responsive Layout */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+                    {/* Spacious Phone Input Box */}
+                    <div
+                      className={cn(
+                        "flex-1 flex items-center h-14 bg-white rounded-2xl sm:rounded-full border border-slate-200/90 shadow-brand-pill px-3 transition-all duration-300",
+                        "hover:border-slate-300 focus-within:border-[#FF6200] focus-within:ring-4 focus-within:ring-[#FF6200]/15",
+                        fieldState.invalid &&
+                          "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/15"
+                      )}
                     >
-                      <Phone className="h-4 w-4 text-slate-400 shrink-0" />
-                      <InputGroupText className="font-semibold text-slate-700 text-xs sm:text-sm">
-                        +1 (US)
-                      </InputGroupText>
-                      <span className="text-slate-300 select-none">|</span>
-                    </InputGroupAddon>
+                      {/* Country Code Prefix */}
+                      <div className="flex items-center gap-2 pl-2 pr-3 text-slate-600 shrink-0 border-r border-slate-200 select-none">
+                        <Phone className="h-4 w-4 text-[#00A3A6] shrink-0" />
+                        <span className="font-bold text-slate-800 text-xs sm:text-sm tracking-tight">
+                          +1 (US)
+                        </span>
+                      </div>
 
-                    <Input
-                      {...field}
-                      id="phone-input"
-                      type="tel"
-                      variant="ghost"
-                      placeholder="(202) 555-0143"
-                      aria-label="Phone number"
-                      aria-invalid={fieldState.invalid}
-                      autoComplete="tel"
-                      onChange={(e) => {
-                        const formatted = formatPhoneNumber(e.target.value);
-                        field.onChange(formatted);
-                      }}
-                      className="h-full text-base sm:text-sm placeholder:text-slate-400 text-slate-900 px-1 font-mono tracking-tight"
-                    />
+                      {/* Phone Number Input */}
+                      <input
+                        {...field}
+                        id="phone-input"
+                        type="tel"
+                        placeholder="(202) 555-0143"
+                        aria-label="Phone number"
+                        aria-invalid={fieldState.invalid}
+                        autoComplete="tel"
+                        onChange={(e) => {
+                          const formatted = formatPhoneNumber(e.target.value);
+                          field.onChange(formatted);
+                        }}
+                        className="flex-1 min-w-0 h-full bg-transparent px-3 text-base sm:text-lg font-mono font-bold text-slate-900 placeholder:text-slate-400 tracking-wider outline-none"
+                      />
+                    </div>
 
+                    {/* Submit Button */}
                     <Button
                       type="submit"
                       variant="orange"
-                      size="pill"
                       isLoading={isSubmitting}
                       disabled={isSubmitting || skipping}
-                      className="h-11 px-5 sm:px-6 shrink-0 text-sm font-bold shadow-md hover:shadow-orange-glow hover:scale-[1.02] active:scale-[0.98] btn-shine transition-all"
+                      className="h-14 sm:h-14 px-6 sm:px-8 rounded-2xl sm:rounded-full text-sm sm:text-base font-extrabold shadow-md hover:shadow-orange-glow hover:scale-[1.02] active:scale-[0.98] btn-shine transition-all shrink-0 w-full sm:w-auto"
                     >
-                      Claim VIP Access
-                      <ArrowRight className="ml-1.5 h-4 w-4 stroke-[2.5]" />
+                      Join Priority List
+                      <ArrowRight className="ml-2 h-4 w-4 stroke-[2.5]" />
                     </Button>
-                  </InputGroup>
+                  </div>
 
                   {fieldState.invalid && (
                     <FieldError
                       errors={[fieldState.error]}
-                      className="mt-2 text-center"
+                      className="mt-2.5 text-center text-red-600 font-semibold text-xs sm:text-sm"
                     />
                   )}
                 </Field>
@@ -359,16 +369,16 @@ export function StepPhoneVip({
         </form>
 
         {/* Form Footnote: SMS terms and Skip Link */}
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 animate-fade-in-up delay-550">
-          <p className="text-center sm:text-left">
-            We&apos;ll text you VIP perks & priority invite. Msg & data rates
-            may apply.
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 animate-fade-in-up delay-550 border-t border-slate-100 pt-4">
+          <p className="text-center sm:text-left flex items-center gap-1.5 text-slate-500">
+            <Lock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+            We respect your privacy. No spam. Msg & data rates may apply.
           </p>
           <button
             type="button"
             onClick={handleSkip}
             disabled={isSubmitting || skipping}
-            className="text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1 hover:underline transition-colors shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group"
+            className="text-slate-600 hover:text-slate-900 font-semibold inline-flex items-center gap-1 hover:underline transition-colors shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             {skipping ? "Confirming standard access..." : "No thanks, keep standard access"}
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
