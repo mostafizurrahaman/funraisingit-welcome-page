@@ -11,7 +11,7 @@ export function BrandLogo({ className }: { className?: string }) {
         width={280}
         height={55}
         priority
-        className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+        className="h-7 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
       />
     </div>
   )

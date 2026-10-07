@@ -200,16 +200,16 @@ export function FunnelContainer() {
       {/* Animated Eye-Catchy Progress Tracker Pill */}
       <nav
         aria-label="Funnel progress"
-        className="w-full max-w-xs sm:max-w-sm mx-auto px-4 mt-0.5 mb-1 z-10 animate-fade-in-down delay-50"
+        className="w-full max-w-[340px] sm:max-w-sm mx-auto px-2 sm:px-4 mt-0.5 mb-1 z-10 animate-fade-in-down delay-50"
       >
-        <div className="flex items-center justify-between p-1 rounded-full bg-white/75 backdrop-blur-md border border-slate-200/80 shadow-xs hover:border-slate-300 transition-colors">
+        <div className="flex items-center justify-between p-1 rounded-full bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-xs hover:border-slate-300 transition-colors">
           {/* Step 1 */}
           <button
             type="button"
             onClick={() => navigateToStep(1)}
             disabled={displayedStep === 1}
             aria-label="Go to Email step"
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all duration-300 select-none ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 select-none ${
               displayedStep === 1
                 ? "bg-[#00A3A6]/10 text-[#00A3A6] shadow-xs cursor-default"
                 : displayedStep > 1
@@ -218,9 +218,9 @@ export function FunnelContainer() {
             }`}
           >
             <span
-              className={`h-2 w-2 rounded-full transition-all duration-500 ${
+              className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-all duration-500 ${
                 displayedStep === 1
-                  ? "bg-[#00A3A6] ring-4 ring-[#00A3A6]/20"
+                  ? "bg-[#00A3A6] ring-3 sm:ring-4 ring-[#00A3A6]/20"
                   : displayedStep > 1
                   ? "bg-[#00A3A6]"
                   : "bg-slate-300"
@@ -243,7 +243,7 @@ export function FunnelContainer() {
             onClick={() => (email || displayedStep > 2) && navigateToStep(2)}
             disabled={displayedStep === 2 || (!email && displayedStep < 2)}
             aria-label="Go to VIP Upgrade step"
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all duration-300 select-none ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 select-none ${
               displayedStep === 2
                 ? "bg-[#FF6200]/10 text-[#FF6200] shadow-xs cursor-default"
                 : displayedStep > 2 || email
@@ -252,15 +252,16 @@ export function FunnelContainer() {
             }`}
           >
             <span
-              className={`h-2 w-2 rounded-full transition-all duration-500 ${
+              className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-all duration-500 ${
                 displayedStep === 2
-                  ? "bg-[#FF6200] ring-4 ring-[#FF6200]/25"
+                  ? "bg-[#FF6200] ring-3 sm:ring-4 ring-[#FF6200]/25"
                   : displayedStep > 2
                   ? "bg-[#00A3A6]"
                   : "bg-slate-300"
               }`}
             />
-            <span>VIP Upgrade</span>
+            <span className="hidden sm:inline">VIP Upgrade</span>
+            <span className="sm:hidden">VIP</span>
           </button>
 
           <div
@@ -277,26 +278,27 @@ export function FunnelContainer() {
             onClick={() => displayedStep === 3}
             disabled={displayedStep !== 3}
             aria-label="Go to VIP Access step"
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all duration-300 select-none ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 select-none ${
               displayedStep === 3
                 ? "bg-[#00A3A6]/10 text-[#00A3A6] shadow-xs cursor-default"
                 : "text-slate-400 cursor-not-allowed opacity-50"
             }`}
           >
             <span
-              className={`h-2 w-2 rounded-full transition-all duration-500 ${
+              className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-all duration-500 ${
                 displayedStep === 3
-                  ? "bg-[#00A3A6] ring-4 ring-[#00A3A6]/20"
+                  ? "bg-[#00A3A6] ring-3 sm:ring-4 ring-[#00A3A6]/20"
                   : "bg-slate-300"
               }`}
             />
-            <span>{isVip ? "VIP Access" : "Waitlist Access"}</span>
+            <span className="hidden sm:inline">{isVip ? "VIP Access" : "Waitlist Access"}</span>
+            <span className="sm:hidden">{isVip ? "VIP" : "Access"}</span>
           </button>
         </div>
       </nav>
 
       {/* Main Multi-Step Content Area */}
-      <main className="flex-1 flex flex-col justify-center items-center py-4 sm:py-6 relative z-10 w-full overflow-x-hidden">
+      <main className="flex-1 flex flex-col justify-center items-center py-3 sm:py-6 relative z-10 w-full overflow-x-hidden px-2 sm:px-4">
         <div className={`w-full flex flex-col items-center ${getTransitionClass()}`}>
           {displayedStep === 1 && (
             <StepComingSoon

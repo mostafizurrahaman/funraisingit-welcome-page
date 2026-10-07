@@ -16,7 +16,7 @@ export function HeroHeading({
   return (
     <Component
       className={cn(
-        "text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] leading-[0.98] sm:leading-[0.95] text-center select-none",
+        "text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.03em] leading-[1.08] sm:leading-[0.98] text-center select-none",
         className
       )}
       {...props}
@@ -33,7 +33,7 @@ export function SparkCrosshair({ className }: { className?: string }) {
       height="18"
       viewBox="0 0 18 18"
       fill="none"
-      className={cn("w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#00A3A6] inline-block shrink-0", className)}
+      className={cn("w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-[#00A3A6] inline-block shrink-0", className)}
     >
       <line x1="9" y1="1.5" x2="9" y2="5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <line x1="9" y1="12.5" x2="9" y2="16.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -52,7 +52,7 @@ export function SparkEyebrow({
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-2.5 text-xs sm:text-[13px] font-extrabold tracking-[0.22em] uppercase text-[#00A3A6] select-none",
+        "flex items-center justify-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs md:text-[13px] font-extrabold tracking-[0.12em] sm:tracking-[0.22em] uppercase text-[#00A3A6] select-none text-center",
         className
       )}
       {...props}
@@ -72,7 +72,7 @@ export function H1({
 }: TypographyProps) {
   return (
     <Component
-      className={cn("text-3xl font-bold tracking-tight text-slate-900", className)}
+      className={cn("text-2xl sm:text-3xl font-bold tracking-tight text-slate-900", className)}
       {...props}
     >
       {children}
@@ -88,7 +88,7 @@ export function H2({
 }: TypographyProps) {
   return (
     <Component
-      className={cn("text-2xl sm:text-3xl font-bold tracking-tight text-slate-900", className)}
+      className={cn("text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-slate-900", className)}
       {...props}
     >
       {children}
@@ -104,7 +104,7 @@ export function H3({
 }: TypographyProps) {
   return (
     <Component
-      className={cn("text-lg sm:text-xl font-semibold tracking-tight text-slate-900", className)}
+      className={cn("text-base sm:text-lg md:text-xl font-semibold tracking-tight text-slate-900", className)}
       {...props}
     >
       {children}
@@ -120,7 +120,7 @@ export function Lead({
   return (
     <p
       className={cn(
-        "text-base sm:text-lg text-slate-600 max-w-xl text-center leading-relaxed font-normal",
+        "text-sm sm:text-base md:text-lg text-slate-600 max-w-xl text-center leading-relaxed font-normal",
         className
       )}
       {...props}
